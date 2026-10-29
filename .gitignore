@@ -1,0 +1,39 @@
+# Python / PyTorch / CUDA build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.dylib
+*.dll
+*.egg
+*.egg-info/
+dist/
+build/
+*.pt
+*.pth
+*.onnx
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Virtual Environments / Tooling
+.venv/
+venv/
+env/
+ENV/
+
+# VS Code directory (optional: ignore workspace user settings)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# System & OS Files
+.DS_Store
+Thumbs.db
+
+# Logs & Data directories
+logs/
+data/
+*.log
