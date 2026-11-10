@@ -1,3 +1,5 @@
+#Basic transformer with multihead attention
+
 import os
 import torch
 from torch import nn
@@ -9,15 +11,22 @@ torch.manual_seed(42)
 
 #I have an 9070XT. Great gpu, but not for this
 device = "cpu"
-
-class AttentionLayer(nn.Module):
-    def __init__(self, model_dim, key_dim, value_dim):
+    
+class MultiheadAttentionLayer(nn.Module):
+    def __init__(self, model_dim, key_dim, value_dim, heads):
         super().__init__()
 
-        self.key_dim = key_dim
-        self.W_Q = nn.Parameter(torch.rand([model_dim, key_dim]))
-        self.W_K = nn.Parameter(torch.rand([model_dim, key_dim]))
-        self.W_V = nn.Parameter(torch.rand([model_dim, value_dim]))
+        #Need model_dim/heads to be an integer
+        assert value_dim%heads == 0, "Number of heads does not divide value dimension"
+        assert key_dim%heads == 0, "Number of heads does not divide key dimension"
+
+        head_key_dim = key_dim//heads
+        head_value_dim = value_dim//heads
+
+        self.head_key_dim = head_key_dim
+        self.W_Q = nn.Parameter(torch.rand([heads, model_dim, head_key_dim]))
+        self.W_K = nn.Parameter(torch.rand([heads, model_dim, head_key_dim]))
+        self.W_V = nn.Parameter(torch.rand([heads, model_dim, head_value_dim]))
         self.W_0 = nn.Parameter(torch.rand([value_dim, model_dim]))
 
     def forward(self, x):
@@ -25,21 +34,25 @@ class AttentionLayer(nn.Module):
         K = x@self.W_K
         V = x@self.W_V
 
-        scale = self.key_dim**0.5
+        scale = self.head_key_dim**0.5
         scores = (Q@K.transpose(-2,-1))/scale
         weights = torch.softmax(scores, dim = -1)
-
+        
         context = weights@V
+
+        #Concatenation step
+        context = context.transpose(0,1)
+        context = context.reshape(context.shape[0], -1)
 
         return context@self.W_0
 
-class TransformerBlock(nn.Module):
-    def __init__(self, model_dim, key_dim, value_dim):
+class MultiheadTransformerBlock(nn.Module):
+    def __init__(self, model_dim, key_dim, value_dim, heads):
         super().__init__()
 
         #Attention
         self.norm1 = nn.LayerNorm(model_dim)
-        self.attention = AttentionLayer(model_dim, key_dim, value_dim)
+        self.attention = MultiheadAttentionLayer(model_dim, key_dim, value_dim, heads)
 
         #Feed Forward Network
         self.norm2 = nn.LayerNorm(model_dim)
@@ -53,22 +66,17 @@ class TransformerBlock(nn.Module):
         x = x + self.attention(self.norm1(x))
         x = x + self.ffn(self.norm2(x))
         return x
-
-
-
-class BasicAttentionNN(nn.Module):
-    def __init__(self, input_dim, output_dim, model_dim, key_dim, value_dim):
+    
+class MultiheadAttentionNN(nn.Module):
+    def __init__(self, input_dim, output_dim, model_dim, key_dim, value_dim, heads):
         super().__init__()
 
         self.attention_linear = nn.Sequential(
             nn.Linear(input_dim, model_dim),
-            TransformerBlock(model_dim, key_dim, value_dim),
-            TransformerBlock(model_dim, key_dim, value_dim),
+            MultiheadTransformerBlock(model_dim, key_dim, value_dim, heads),
+            MultiheadTransformerBlock(model_dim, key_dim, value_dim, heads),
             nn.Linear(model_dim, output_dim)
         )
-
-    def forward(self, x):
-        return self.attention_linear(x)
 
 
 '''
@@ -97,7 +105,12 @@ dataloader = DataLoader(dataset, batch_size = batch_size, shuffle = True)
 '''
 
 #Model stuff
-model = BasicAttentionNN(32, 10, 32, 32, 32)
+model = MultiheadAttentionLayer(
+    model_dim=32,
+    key_dim=32,
+    value_dim=32,
+    heads=4
+)
 x = torch.rand((15,32))
 
 y = model(x)
@@ -105,3 +118,6 @@ y = model(x)
 predictions = torch.argmax(y, dim =-1)
 
 print(predictions)
+
+
+
