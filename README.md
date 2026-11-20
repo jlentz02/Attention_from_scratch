@@ -11,6 +11,6 @@ This project, like most of my projects, is for my own learning. With this projec
 * training.ipynb: Contains essentially the same code as the train_template.py file, but split up into code blocks to facilitate easier repeat experimentation.   
 
 ## Papers I read for this project/psuedo-bibliography
-* *Attention Is All You Need* Vaswani et al
-* *Kronecker Delta Rule for Long Context Linear Attention* Hartl et al
-* *Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention* Katharopoulos et al
+* *Attention Is All You Need*, Vaswani et al
+* *Kronecker Delta Rule for Long Context Linear Attention*, Hartl et al
+* *Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention*, Katharopoulos et al
