@@ -10,7 +10,7 @@ import torch.optim as optim
 def train_epoch(epoch):
     running_loss = 0
     running_acc = 0
-    for i, data in enumerate(dataloader):
+    for i, data in enumerate(dataloader_train):
         inputs, labels = data
 
         optimizer.zero_grad()
@@ -35,10 +35,31 @@ def train_epoch(epoch):
     
     return running_loss, running_acc
 
+def test_model():
+    running_acc = 0
+    print(len(dataloader_test))
+    for i, data in enumerate(dataloader_test):
+        inputs, labels = data
+
+        outputs = model(inputs)
+
+        CLS = outputs[:, 0, :]
+
+        with torch.no_grad():
+            preds = torch.argmax(CLS, dim=1)
+            correct = (preds == labels)
+            accuracy = correct.float().sum()
+            running_acc += accuracy
+
+    return running_acc
+
 
 batch_size = 32
 data_size = 10000
-dataloader = load_data(batch_size, data_size)
+tts_ratio = 0.8
+train_size = data_size*tts_ratio
+test_size = data_size*(1-tts_ratio)
+dataloader_train, dataloader_test = load_data(batch_size, data_size, tts_ratio=tts_ratio)
 
 model = MultiheadAttentionNN(
     batch_size=batch_size,
@@ -56,5 +77,13 @@ loss_fn = torch.nn.CrossEntropyLoss()
 model.train()
 for epoch in range(5):
     epoch_loss, accuracy = train_epoch(epoch)
-    print(f"Epoch {epoch+1} | Loss: {epoch_loss/(data_size//batch_size):.4f} | Accuracy: {accuracy/data_size:.4f}")
+    print(f"Epoch {epoch+1} | Loss: {epoch_loss/(train_size//batch_size):.4f} | Accuracy: {accuracy/train_size:.4f}")
+
+test_accuracy = test_model()
+
+print(f"Test accuracy: {test_accuracy/test_size:.4f}")
+
+
+
+
     

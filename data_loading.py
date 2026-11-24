@@ -9,9 +9,9 @@ import csv
 
 #Data loading
 #Stolen from my own project JEPA
-#Takes as argument the data size and the batch size
+#Takes as argument the data size, batch size, and the train test split (tts) ratio
 #Returns a pytorch DataLoader for training
-def load_data(batch_size, data_size = None):
+def load_data(batch_size, data_size = 60000, tts_ratio = 0.8):
     with open("data/mnist_train.csv", "r") as read_obj:
         csv_reader = csv.reader(read_obj)
         train = list(csv_reader)
@@ -20,18 +20,24 @@ def load_data(batch_size, data_size = None):
     train = torch.tensor(train, dtype = torch.float32)
 
     #Data formatting and data loader
-    train_Y = train[:,0].long()
-    train_X = train[:,1:]
+    X = train[:,1:]
+    Y = train[:,0].long()
 
     #Trim data set down
-    if data_size is not None:
-        train_X = train_X[:data_size]
-        train_Y = train_Y[:data_size]
+    train_size = int(data_size*tts_ratio)
+    train_X = X[:train_size]
+    train_Y = Y[:train_size]
 
-    dataset = TensorDataset(train_X, train_Y)
+    test_X = X[train_size:data_size]
+    test_Y = Y[train_size:data_size]
 
-    dataloader = DataLoader(dataset, batch_size = batch_size, shuffle = True, drop_last=True)
 
-    return dataloader
+    dataset_train = TensorDataset(train_X, train_Y)
+    dataset_test = TensorDataset(test_X, test_Y)
 
+
+    dataloader_train = DataLoader(dataset_train, batch_size = batch_size, shuffle = True, drop_last=True)
+    dataloader_test = DataLoader(dataset_test, batch_size = batch_size, shuffle = True, drop_last=True)
+
+    return dataloader_train, dataloader_test
 
