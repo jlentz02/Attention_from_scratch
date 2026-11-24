@@ -1,7 +1,7 @@
 ## Documentation of Experiments
-# Basic Multihead Transformer
+# Basic Multi-head Transformer
     My first model in this project is a 2 block transformer model and a linear input and linear output layer. 
-    Each transformer layer has a multihead attention layer and a feedforward layer that combine to make one block.
+    Each transformer layer has a multi-head attention layer and a feed-forward layer that combine to make one block.
 
     For my first batch of experiments I am using the MNIST data set because of its simplicity and fast training times.
     To facilitate transforming the 28 x 28 image into tokens, I have prepended a "tokenizer" that transforms each image
@@ -19,6 +19,7 @@
     While it is not really the point of this project (that would be learning about attention, its variants, and use cases),
     I will still include some results of the models runs. 
 
-    |model_dim|patch_size|heads|optimizer|lr  |batch_size|epochs|train accuracy|test accuracy|
-    |---------|----------|-----|---------|----|----------|------|--------------|-------------|
-    |64       |14        |8    |adam     |1e-3|32        |50    |99.3%         |96.8%        |
+| model_dim | patch_size | heads | optimizer | lr   | batch_size | epochs | train accuracy | test accuracy |
+|-----------|------------|-------|-----------|------|------------|--------|----------------|---------------|
+| 64        | 14         | 8     | adam      | 1e-3 | 32         | 50     | 99.3%          | 96.8%         |
+
