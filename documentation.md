@@ -19,7 +19,7 @@
     While it is not really the point of this project (that would be learning about attention, its variants, and use cases),
     I will still include some results of the models runs. 
 
-| model_dim | patch_size | heads | optimizer | lr   | batch_size | epochs | train accuracy | test accuracy |
-|-----------|------------|-------|-----------|------|------------|--------|----------------|---------------|
-| 64        | 14         | 8     | adam      | 1e-3 | 32         | 50     | 99.3%          | 96.8%         |
+    | model_dim | patch_size | heads | optimizer | lr   | batch_size | epochs | train accuracy | test accuracy |
+    |-----------|------------|-------|-----------|------|------------|--------|----------------|---------------|
+    | 64        | 14         | 8     | adam      | 1e-3 | 32         | 50     | 99.3%          | 96.8%         |
 
